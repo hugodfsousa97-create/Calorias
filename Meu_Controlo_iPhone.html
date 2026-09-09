@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Meu Controlo">
+<meta name="theme-color" content="#f5f5f7">
+<title>Meu Controlo</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:#f5f5f7}
+body{margin:0;background:#f5f5f7;color:#111;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+     -webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom)}
+main{max-width:620px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px 40px}
+h1{font-size:30px;letter-spacing:-.6px;margin:4px 0}
+h2{font-size:19px;margin:0 0 12px}
+.sub,small{color:#6b6b70}
+.card{background:#fff;border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 1px 5px #0001}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#f2f2f7;border-radius:15px;padding:12px}
+.num{font-size:25px;font-weight:750}
+button,select,input{font:inherit;border-radius:13px;padding:13px;border:1px solid #d1d1d6;width:100%;background:#fff;min-height:48px}
+button{background:#111;color:#fff;border:0;font-weight:650;margin-top:8px;touch-action:manipulation}
+button:active{transform:scale(.985);opacity:.85}
+button.secondary{background:#eee;color:#111}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick button{background:#f2f2f7;color:#111;text-align:left;margin:0}
+.meal{border-top:1px solid #eee;padding-top:10px;margin-top:10px}
+.mealhead{display:flex;justify-content:space-between;font-weight:700;gap:10px}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #eee}
+.remove{width:auto;margin:0;padding:7px 10px;min-height:40px;background:#f2f2f7;color:#111}
+label{font-size:13px;color:#666;display:block;margin:8px 0 5px}
+.bar{height:10px;background:#e5e5ea;border-radius:8px;margin-top:12px;overflow:hidden}
+.fill{height:100%;background:#111;width:0;transition:width .25s ease}
+.tip{font-size:12px;color:#6b6b70;margin-top:10px;line-height:1.4}
+@media(max-width:380px){.quick{grid-template-columns:1fr}.grid{gap:8px}}
+</style>
+</head>
+<body>
+<main>
+<h1>🍽️ Meu Controlo</h1>
+<div class="sub">108 kg → 99 kg até 19/12</div>
+
+<div class="card">
+<h2>📊 Hoje</h2>
+<div class="grid">
+<div class="stat"><small>Calorias</small><div class="num" id="k">0</div><small>de 2.150 kcal</small></div>
+<div class="stat"><small>Proteína</small><div class="num" id="p">0 g</div><small>meta 160 g</small></div>
+</div>
+<div class="bar"><div class="fill" id="bar"></div></div>
+</div>
+
+<div class="card">
+<h2>🍽️ Adicionar rapidamente</h2>
+<div class="quick">
+<button onclick="pre('Pequeno-almoço','Sandes habitual',320,24)">☕ Sandes habitual</button>
+<button onclick="pre('Lanche manhã','Tortilhas',145,4)">🌯 Tortilhas</button>
+<button onclick="almo()">🍚 Almoço habitual</button>
+<button onclick="pre('Lanche tarde','Pudim proteico',70,10)">🥛 Pudim 70 kcal</button>
+<button onclick="pre('Segundo lanche','Pão + queijo + fiambre',350,25)">🥪 Pão + queijo + fiambre</button>
+<button onclick="pre('Jantar','Sopa de legumes',60,2)">🥣 Sopa</button>
+</div>
+</div>
+
+<div class="card">
+<h2>➕ Adicionar algo diferente</h2>
+<label>Refeição</label>
+<select id="meal">
+<option>Pequeno-almoço</option><option>Lanche manhã</option><option>Almoço</option>
+<option>Lanche tarde</option><option>Segundo lanche</option><option>Jantar</option><option>Outro</option>
+</select>
+<label>Alimento</label><select id="food"></select>
+<label>Quantidade (g)</label>
+<input id="qty" type="number" inputmode="decimal" min="1" placeholder="Ex.: 140">
+<button onclick="add()">Adicionar</button>
+</div>
+
+<div class="card"><h2>📝 Hoje</h2><div id="today"></div></div>
+
+<div class="card">
+<h2>⚖️ Peso corporal</h2>
+<div class="sub">Aqui registas o teu peso, não o peso da comida.</div>
+<label>Peso de hoje (kg)</label>
+<input id="weight" type="number" step="0.1" inputmode="decimal" min="1" placeholder="Ex.: 108.0">
+<button onclick="weight()">Guardar peso</button>
+<div id="weights"></div>
+</div>
+
+<div class="card"><h2>📅 Histórico</h2><div id="hist"></div></div>
+
+<div class="card">
+<h2>⭐ Guardar refeição</h2>
+<div class="sub">Útil para refeições que repetes.</div>
+<label>Nome</label><input id="cn" placeholder="Ex.: Sandes de sempre">
+<label>Calorias</label><input id="ck" type="number" inputmode="decimal" placeholder="Ex.: 320">
+<label>Proteína (g)</label><input id="cp" type="number" inputmode="decimal" placeholder="Ex.: 24">
+<button onclick="custom()">Guardar refeição</button>
+<div id="customs"></div>
+</div>
+
+<div class="tip">Os dados são guardados localmente neste dispositivo através do armazenamento do navegador.</div>
+</main>
+
+<script>
+const foods={
+"Arroz cozido":[130,2.7],"Frango grelhado":[165,31],"Carne (estimativa)":[220,26],
+"Tortilhas":[145,4],"Pudim proteico":[70,10],"Queijo light":[50,7],
+"Fiambre de perna extra":[55,10],"Pão de Rio Maior":[250,9],"Sopa de legumes":[60,2],"Café":[2,.3]
+};
+let D=JSON.parse(localStorage.getItem("diet_v2")||'{"days":{},"weights":[],"custom":[]}');
+
+const K=()=>new Date().toISOString().slice(0,10);
+const day=()=>D.days[K()]||(D.days[K()]={items:[]});
+function save(){localStorage.setItem("diet_v2",JSON.stringify(D))}
+function addItem(m,n,k,p){day().items.push({m,n,k,p});save();render()}
+function pre(m,n,k,p){addItem(m,n,k,p)}
+function almo(){
+ addItem("Almoço","Sopa de legumes",60,2);
+ addItem("Almoço","Arroz cozido — 100 g",130,2.7);
+ addItem("Almoço","Carne — 140 g",308,36.4);
+}
+function add(){
+ let n=document.getElementById("food").value,q=+document.getElementById("qty").value||0;
+ if(!q)return;
+ let f=foods[n];
+ addItem(document.getElementById("meal").value,n+" — "+q+" g",f[0]*q/100,f[1]*q/100);
+ document.getElementById("qty").value="";
+}
+function del(i){day().items.splice(i,1);save();render()}
+function weight(){
+ let w=+document.getElementById("weight").value;
+ if(!w)return;
+ D.weights.push({d:K(),w});save();document.getElementById("weight").value="";render();
+}
+function custom(){
+ let n=document.getElementById("cn").value.trim(),k=+document.getElementById("ck").value||0,p=+document.getElementById("cp").value||0;
+ if(!n||!k)return;
+ D.custom.push({n,k,p});save();
+ document.getElementById("cn").value="";
+ document.getElementById("ck").value="";
+ document.getElementById("cp").value="";
+ render();
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function render(){
+ let d=day(),k=d.items.reduce((a,x)=>a+x.k,0),p=d.items.reduce((a,x)=>a+x.p,0);
+ document.getElementById("k").textContent=Math.round(k);
+ document.getElementById("p").textContent=Math.round(p)+" g";
+ document.getElementById("bar").style.width=Math.min(100,k/2150*100)+"%";
+
+ let g={};
+ d.items.forEach((x,i)=>(g[x.m]??=[]).push([x,i]));
+ let s="";
+ for(let m in g){
+   s+=`<div class="meal"><div class="mealhead"><span>${esc(m)}</span><span>${Math.round(g[m].reduce((a,z)=>a+z[0].k,0))} kcal</span></div>`;
+   g[m].forEach(z=>{
+     let x=z[0];
+     s+=`<div class="row"><div><b>${esc(x.n)}</b><br><small>${Math.round(x.k)} kcal · ${Math.round(x.p)} g proteína</small></div><button class="remove" onclick="del(${z[1]})">×</button></div>`;
+   });
+   s+="</div>";
+ }
+ document.getElementById("today").innerHTML=s||'<div class="sub">Ainda não registaste nada hoje.</div>';
+
+ document.getElementById("weights").innerHTML=D.weights.slice(-7).reverse()
+   .map(x=>`<div class="row"><span>${esc(x.d)}</span><b>${x.w} kg</b></div>`).join("");
+
+ document.getElementById("hist").innerHTML=Object.keys(D.days).sort().reverse().slice(0,14)
+   .map(d=>{let a=D.days[d].items,k=a.reduce((s,x)=>s+x.k,0);
+   return `<div class="row"><span><b>${esc(d)}</b><br><small>${a.length} registos</small></span><b>${Math.round(k)} kcal</b></div>`}).join("")
+   ||'<div class="sub">Sem histórico.</div>';
+
+ document.getElementById("customs").innerHTML=D.custom.map(x=>
+   `<div class="row"><span><b>${esc(x.n)}</b><br><small>${x.k} kcal · ${x.p} g proteína</small></span><button class="remove" onclick="addItem('Outro','${esc(x.n)}',${x.k},${x.p})">Usar</button></div>`
+ ).join("");
+}
+Object.keys(foods).forEach(n=>{
+ let o=document.createElement("option");o.value=n;o.textContent=n;
+ document.getElementById("food").appendChild(o);
+});
+render();
+</script>
+</body>
+</html>
